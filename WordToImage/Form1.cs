@@ -13,8 +13,10 @@ namespace WordToImage
 {
     public partial class Form1 : Form
     {
-        int defWidth = 100;
-        int defHeight = 30;
+        int defWidth = 200;
+        int defHeight = 35;
+        List<char> fillWord = new List<char>();
+
         public Form1()
         {
             InitializeComponent();
@@ -28,14 +30,16 @@ namespace WordToImage
         private void WordToImage()
         {
             string text = textBox1.Text;
+            int.TryParse(Text_ImgWidth.Text,out defWidth);
+            defWidth = defWidth == 0 ? 200 : defWidth;
+            getFillWord();
             //Step1-Draw Text;
             Bitmap wordBroad = new Bitmap(defWidth, defHeight);
             Graphics g = Graphics.FromImage(wordBroad);
             g.FillRectangle(new SolidBrush(Color.White), new Rectangle(0, 0, wordBroad.Width, wordBroad.Height));
-            g.DrawString(text, new Font("新細明體", 12), new SolidBrush(Color.Black),
+            g.DrawString(text, new Font("標楷體",22), new SolidBrush(Color.Black),
                 new Point(0, 0));
             g.Dispose();
-            Pic_result.BackgroundImage = wordBroad;
 
             //Step2-Get Pixel
             int[,] wordArray = GetPixelArray(wordBroad);
@@ -46,13 +50,13 @@ namespace WordToImage
             {
                 for (int x = 0; x < defWidth; x++)
                 {
-                    if (wordArray[x, y] == 0)
+                    if (wordArray[x, y] == 255)
                     {
-                        strOutput += "　";
+                        strOutput += fillWord[x % fillWord.Count()];
                     }
                     else
                     {
-                        strOutput += "蘭";
+                        strOutput += "　";
                     }
                 }
                 strOutput += Environment.NewLine;
@@ -61,8 +65,9 @@ namespace WordToImage
             {
                 writer.Write(strOutput);
             }
-            Text_Output.Text = strOutput;
         }
+
+
 
         private int[,] GetPixelArray(Bitmap temp)
         {
@@ -81,6 +86,15 @@ namespace WordToImage
             return resultArr;
         }
 
+        private void getFillWord()
+        {
+            string getWords = Text_FillWord.Text == string.Empty ? "填" : Text_FillWord.Text;
+            fillWord.Clear();
+            foreach( var t in getWords)
+            {
+                fillWord.Add(t);
+            }
+        }
 
     }
 }
